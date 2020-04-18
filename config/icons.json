@@ -1,0 +1,11 @@
+{
+    "folder" : "./images/",
+    "filenames" : {
+        "1" : "1_person.png", 
+        "2" : "2_bicycle.png", 
+        "3" : "3_car.png", 
+        "4" : "4_motocycle.png", 
+        "5" : "5_bus.png", 
+        "6" : "6_truck.png"
+    }
+}
