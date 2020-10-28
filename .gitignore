@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#Added by Przemek
+logs/
+tmp/
+empty_frames/
+deep_sort_network/
+

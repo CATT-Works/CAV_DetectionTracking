@@ -131,7 +131,7 @@ class BoundingBox:
             iou = interArea / float(box.area + self.area - interArea)
             ioulist.append(iou)
         return ioulist
-
+    
 class Object():
     def __init__(self, object_type):
         assert object_type in list(ObjectType), "Make object_type not a valid ObjectType value"
@@ -378,7 +378,6 @@ class Object():
         if not includeNone:
             m = {i: m[i] for i in m if m[i] is not None}
 
-
         self.msgCnt += 1
         if retDic:
             return m
@@ -386,3 +385,62 @@ class Object():
         msg = json.dumps(m)
         return msg
 
+    def getParams(self, asCsv=False):
+        """
+        Returns the parameters, for the logging purposes.
+        Arguments:
+            asCsv:  if True, returns a string (parameters separated with comas).
+                    otherwise returns a dictionary
+        """
+
+        m = {}
+        m['id'] = self.id
+        m['objectType'] = int(self.type)
+        m['secMark'] = time()
+        
+        if len(self.bboxes) == 0:
+            m['xLeft'] = None
+            m['xRight'] = None
+            m['yTop'] = None 
+            m['yBottom'] = None 
+            m['lat'] = None
+            m['lon'] = None            
+        else:
+            self.bboxes[-1].updateParams(params)  
+            if len(self.bboxes) > 1:
+                self.bboxes[-2].updateParams(params)            
+            
+            m['xLeft'] = self.bboxes[-1].xLeft
+            m['xRight'] = self.bboxes[-1].xRight
+            m['yTop'] = self.bboxes[-1].yTop 
+            m['yBottom'] = self.bboxes[-1].yBottom 
+            m['lat'] = self.bboxes[-1].lat
+            m['lon'] = self.bboxes[-1].lon
+            
+        m['speed'], _, _ = self.getSpeed()
+        m['heading'] = self.getHeading()
+        m['elevation'] = self.getElevation()
+
+        if asCsv:
+            ret = ','.join(['{}']*len(dic))
+            ret = ret.format(
+                m['id'], 
+                m['objectType'],
+                m['secMark'],
+                m['xLeft'],
+                m['xRight'],
+                m['yTop'], 
+                m['yBottom'], 
+                m['lat'],
+                m['lon'],  
+                m['speed'],
+                m['heading'],
+                m['elevation']                
+            )
+            return ret
+        else:
+            return m
+
+
+    
+    
