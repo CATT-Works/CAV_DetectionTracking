@@ -59,11 +59,13 @@ class Map:
         """
         return self.mapimg.copy()
 
-    def addObjects(self, objects):
+    
+    def addObjects(self, objects, use_obj_color = False):
         """
         Returns the copy of the image with objects added. Uses last bouding boxes. Updates parameters if necessary.
         Arguments:
             objects - list ob objects (instances ob Object class)
+            icons - icons related to objects. If none, icons are collected automatically
         Returns:
             OpenCV image
         """
@@ -78,11 +80,16 @@ class Map:
             y = int(round(box.birdEyeY))
             det_class = int(obj.type)
 
-            if (x >= 16) and (x <= mapx-16) and (y <= mapy-32):
+            
+            if (x >= 16) and (x <= mapx-16) and (y >= 32) and (y <= mapy):
                 bg = newmap[y-32:y, x-16:x+16, :]
-
                 for channel in range (3):
                     bg[:, :, channel] = np.multiply(bg[:, :, channel], self.icons.iconsMasked[det_class])
+                if use_obj_color:
+                    dst = np.multiply((self.icons.icons[det_class] > 0).astype(np.uint8), obj.color).astype(np.uint8)
+                    
+                    dst = cv2.add(bg, dst)
+                else:
                     dst = cv2.add(bg, self.icons.icons[det_class])
                 newmap[y-32:y, x-16:x+16, :] = dst
 

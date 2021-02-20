@@ -283,19 +283,23 @@ class Object():
 
         return ret
 
-    def getSpeed(self):
+    def getSpeed(self, lookback = 1):
         """
+        Arguments:
+            lookback: how many frames back (bounding boxes) should be considered
         Returns:
             - speed ob the objects [m/s]. Speed is computed based on the last two bounding boxes
             - distance that has been driven (in meters)
             - time (in seconds)
         """
 
-        if len (self.bboxes) < 2:
+        first_box_pos = int(lookback + 1)
+
+        if len (self.bboxes) < first_box_pos:
             return None, None, None
 
-        dist = self.__computeDistance(self.bboxes[-2], self.bboxes[-1])
-        ttime = self.bboxes[-1].timeStamp - self.bboxes[-2].timeStamp
+        dist = self.__computeDistance(self.bboxes[-first_box_pos], self.bboxes[-1])
+        ttime = self.bboxes[-1].timeStamp - self.bboxes[-first_box_pos].timeStamp
 
         if ttime == 0:
             return 0.0, 0.0, 0.0
@@ -316,7 +320,7 @@ class Object():
         Returns: elevation of an object (elevation of the last bounding box)
         """
         if len(self.bboxes) > 0:
-            return self.bboxes[0].elevation
+            return self.bboxes[-1].elevation
         else:
             return None
 
@@ -405,11 +409,7 @@ class Object():
             m['yBottom'] = None 
             m['lat'] = None
             m['lon'] = None            
-        else:
-            self.bboxes[-1].updateParams(params)  
-            if len(self.bboxes) > 1:
-                self.bboxes[-2].updateParams(params)            
-            
+        else:            
             m['xLeft'] = self.bboxes[-1].xLeft
             m['xRight'] = self.bboxes[-1].xRight
             m['yTop'] = self.bboxes[-1].yTop 
