@@ -25,7 +25,8 @@ class Parameters:
         self.latA, self.latB = None, None # latitude = latA * y + latB, where y - pixel coordinate
 
         self.elevation = None # Elevation of an intersection
-
+        
+        self.lanes_mask = None
 
     def __generate_unwarp_matrices(self, cameraPoints, birdEyePoints):
         """
@@ -139,3 +140,6 @@ class Parameters:
 
         if 'elevation' in data:
             self.elevation = data['elevation']
+            
+        if 'lanes_mask' in data:
+            self.lanes_mask = data['lanes_mask']

@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 from pandas import DataFrame
 
 class Lanes:
-    def __init__(self, path, queue_size=50):
-        self.loadMask(path)
+    def __init__(self, path, params = None, queue_size=50):
+        self.loadMask(path, params)
         self.lanesQueue = {}
         self.lanesCount = {}
         self.laneChanges = np.zeros((self.nrLanes, self.nrLanes)).astype(int)        
@@ -16,18 +16,23 @@ class Lanes:
             self.lanesCount[i+1] = 0
 
 
-    def updateMask(self):    
-        tmpline = self.mask[-1, :]
-        for i in range(self.nrLanes):
-            color = tmpline[(tmpline > i).argmax(axis=0)]
-            self.mask[self.mask == color] = i+1
+    def updateMask(self, params = None):
+        if (params is not None) and params.lanes_mask is not None:
+            for i, color in enumerate(params.lanes_mask):
+                self.mask[self.mask == color] = i+1
+ 
+        else:
+            tmpline = self.mask[-1, :]
+            for i in range(self.nrLanes):
+                color = tmpline[(tmpline > i).argmax(axis=0)]
+                self.mask[self.mask == color] = i+1
             
-    def loadMask(self, path):
+    def loadMask(self, path, params = None):
         self.mask = (255*plt.imread(path)).astype(int)
         if (len(self.mask.shape) == 3) and (self.mask.shape[2] > 1):
-            self.mask = np.sum(self.mask, axis=2)
+            self.mask = self.mask[:, :, 0]
         self.nrLanes = len(np.unique(self.mask)) - 1
-        self.updateMask()
+        self.updateMask(params)
 
         
         
