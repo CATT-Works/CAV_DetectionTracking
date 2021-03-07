@@ -133,7 +133,7 @@ class Lanes:
         ax.xaxis.set_visible(False)  # hide the x axis
         ax.yaxis.set_visible(False)  # hide the y axis
         dpi = plt.gcf().get_dpi()
-        fig.set_size_inches(imgsize[0]/float(dpi),imgsize[1]/2/float(dpi))
+        fig.set_size_inches(imgsize[1]/float(dpi),imgsize[0]/2/float(dpi))
 
         nr_values = df.values.shape[0] * df.values.shape[1]
         tmp = ax.table(cellText=df.values, colLabels=df.keys(), rowLabels = lane_labels, 
@@ -142,6 +142,7 @@ class Lanes:
                        colColours=self._color_matrix(df, header_color)[0], rowColours=[header_color]*self.nrLanes
                       )
         fig.canvas.draw()
+        
         
         data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
         data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))  
@@ -153,7 +154,7 @@ class Lanes:
         ax.xaxis.set_visible(False)  # hide the x axis
         ax.yaxis.set_visible(False)  # hide the y axis
         dpi = plt.gcf().get_dpi()
-        fig.set_size_inches(imgsize[0]/float(dpi),imgsize[1]/2/float(dpi))
+        fig.set_size_inches(imgsize[1]/float(dpi),imgsize[0]/2/float(dpi))
         
         tmp = ax.table(cellText=self.laneChanges, 
                        colLabels=lane_labels, rowLabels = lane_labels, 
@@ -168,7 +169,6 @@ class Lanes:
         
         data = np.concatenate((data, data2), axis = 0)
 
-        
         white_filter = np.sum(data, axis=2) == 3*255
         data[white_filter, :] = 0
         plt.close()
