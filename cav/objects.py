@@ -389,7 +389,7 @@ class Object():
         msg = json.dumps(m)
         return msg
 
-    def getParams(self, asCsv=False):
+    def getParams(self, asCsv=False, speedLookback = 1):
         """
         Returns the parameters, for the logging purposes.
         Arguments:
@@ -400,9 +400,9 @@ class Object():
         m = {}
         m['id'] = self.id
         m['objectType'] = int(self.type)
-        m['secMark'] = time()
         
         if len(self.bboxes) == 0:
+            m['secMark'] = None
             m['xLeft'] = None
             m['xRight'] = None
             m['yTop'] = None 
@@ -410,6 +410,7 @@ class Object():
             m['lat'] = None
             m['lon'] = None            
         else:            
+            m['secMark'] = self.bboxes[-1].timeStamp
             m['xLeft'] = self.bboxes[-1].xLeft
             m['xRight'] = self.bboxes[-1].xRight
             m['yTop'] = self.bboxes[-1].yTop 
@@ -417,12 +418,12 @@ class Object():
             m['lat'] = self.bboxes[-1].lat
             m['lon'] = self.bboxes[-1].lon
             
-        m['speed'], _, _ = self.getSpeed()
+        m['speed'], _, _ = self.getSpeed(speedLookback)
         m['heading'] = self.getHeading()
         m['elevation'] = self.getElevation()
 
         if asCsv:
-            ret = ','.join(['{}']*len(dic))
+            ret = ','.join(['{}']*len(m))
             ret = ret.format(
                 m['id'], 
                 m['objectType'],
