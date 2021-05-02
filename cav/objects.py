@@ -144,8 +144,8 @@ class Object():
         self.tracker = None
         self.color = None # Color user for objects
         self.notDetectedCounter = 0 # Counter used for object destruction
-        self.id = id(self)
-
+        #self.id = id(self)
+        self.id = '{}_{}'.format(id(self), time())
         self.heading = None # Heading of the object in degrees
 
     def createTracker(self, img, bbox, add_box = True):
