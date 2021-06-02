@@ -134,3 +134,6 @@ tmp/
 empty_frames/
 deep_sort_network/
 frames/
+MoveOver/
+MoveOver/frames/
+MoveOver/videos/
