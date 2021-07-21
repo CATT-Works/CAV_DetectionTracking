@@ -8,6 +8,9 @@ import numpy as np
 import cv2
 import glob
 
+from time import time, strftime, gmtime
+
+
 class ImageEncoder(object):
 
     def __init__(self, checkpoint_filename, input_name="images",
@@ -137,20 +140,42 @@ def extract_image_patch(image, bbox, patch_shape):
 
 
 
-def generate_video(fps, inputPath='./frames/', outputFile = './output_video.avi'):
+def generate_video(fps, inputPath='./frames/', outputFile = './output_video.avi',
+                   fourcc = 'DIVX',
+                   length = None):
+    """
+    Generates a video based on given parametrers
+    Arguments:
+        fps        - frames per second
+        inputPath  - folder with frames
+        outputFile - video file
+        fourcc     - string used to create an cv2.VideoWriter_fourcc object
+        length     - Maximum lentgh of the video (in seconds). If none, all frames are used. 
+    """
+    t = time()
     out = None
     filenames = glob.glob(os.path.join(inputPath, '*.jpg'))
     filenames.sort()
+    if length is None:
+        nrfiles = len(filenames)
+    else:
+        nrfiles = int(min(len(filenames), fps * length))
     for i, filename in enumerate(filenames):
+        if length is not None:
+            if i > nrfiles:
+                break
+                
         if i%10 == 0:
-            sys.stdout.write('{:.1f}% ({}/{}) done.             \r'.format(
-                100*i/len(filenames), i, len(filenames)))
+            sys.stdout.write('{:.1f}% ({}/{}) done in {}s.          \r'.format(
+                100*i/nrfiles, i, nrfiles,
+                strftime('%M:%S', gmtime(time() - t))))
+            
         img = cv2.imread(filename)
         if out is None:
             height, width, layers = img.shape
             size = (width,height)
-            out = cv2.VideoWriter(outputFile,cv2.VideoWriter_fourcc(*'DIVX'), fps, size)
+            out = cv2.VideoWriter(outputFile,cv2.VideoWriter_fourcc(*fourcc), fps, size)
         out.write(img) 
 
     out.release()
-    print ('100% done!                                   ')
+    print ('100% done!                                                               ')
