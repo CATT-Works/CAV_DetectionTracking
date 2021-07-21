@@ -166,7 +166,7 @@ def generate_video(fps, inputPath='./frames/', outputFile = './output_video.avi'
                 break
                 
         if i%10 == 0:
-            sys.stdout.write('{:.1f}% ({}/{}) done in {}s.          \r'.format(
+            sys.stdout.write('{:.1f}% ({}/{}) done in {} seconds.          \r'.format(
                 100*i/nrfiles, i, nrfiles,
                 strftime('%M:%S', gmtime(time() - t))))
             
