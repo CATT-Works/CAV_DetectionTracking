@@ -136,3 +136,10 @@ deep_sort_network/
 frames/
 MoveOver/frames/
 MoveOver/videos/
+MoveOver/data/
+MoveOver/**/data/
+MoveOver/**/*.*
+!MoveOver/**/01-PrepareConfigs.ipynb
+!MoveOver/**/params.json
+!MoveOver/example/
+
