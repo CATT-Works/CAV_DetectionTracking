@@ -141,5 +141,7 @@ MoveOver/**/data/
 MoveOver/**/*.*
 !MoveOver/**/01-PrepareConfigs.ipynb
 !MoveOver/**/params.json
-!MoveOver/example/
+!MoveOver/example/*
+!MoveOver/example/data/*
+!MoveOver/example/images/*
 
