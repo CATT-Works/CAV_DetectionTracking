@@ -144,4 +144,7 @@ MoveOver/**/*.*
 !MoveOver/example/*
 !MoveOver/example/data/*
 !MoveOver/example/images/*
+!MoveOver/**/images/mask.png
+!MoveOver/**/images/SkyView.jpg
+
 
