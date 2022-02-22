@@ -78,6 +78,10 @@ class Lanes:
         
         x = int((obj.bboxes[-1].xLeft + obj.bboxes[-1].xRight)/2)
         y = obj.bboxes[-1].yBottom
+        
+        if y == self.mask.shape[0]:
+            y -=1
+            
         if (y < self.mask.shape[0]) & (x < self.mask.shape[1]):
             lane = self.mask[y, x]
         else:
