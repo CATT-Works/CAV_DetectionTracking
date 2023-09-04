@@ -25,7 +25,8 @@ class Parameters:
         self.latA, self.latB = None, None # latitude = latA * y + latB, where y - pixel coordinate
 
         self.elevation = None # Elevation of an intersection
-
+        
+        self.lanes_mask = None
 
     def __generate_unwarp_matrices(self, cameraPoints, birdEyePoints):
         """
@@ -139,3 +140,42 @@ class Parameters:
 
         if 'elevation' in data:
             self.elevation = data['elevation']
+            
+        if 'lanes_mask' in data:
+            self.lanes_mask = data['lanes_mask']
+
+            
+    def birdEye2Geocoordinates(self, x, y):
+        """
+        Computes longitude and latitude given the image point coordinates
+        Arguments:
+            x, y - point coordinates (bird eye view)
+        Returns:
+            longitude, latitude (float, float) - geocoordinates
+        """
+        longitude = self.lonA * x + self.lonB
+        latitude = self.latA * y + self.latB
+        return longitude, latitude
+    
+    def geocoordinates2BirdEye(self, longitude, latitude):
+        """
+        Computes birdeye view x and y given the geocoordinates
+        Arguments:
+            longitude, latitude - geocoordinates
+        Returns:
+            x, y (int, int) - point coordinates
+        """
+        x = (longitude - self.lonB) / self.lonA
+        y = (latitude - self.latB) / self.latA
+        
+        return np.round(x).astype(int), np.round(y).astype(int)
+    
+    def camera2BirdEye(self, x, y):
+        src = np.array([[[x, y]]], dtype='float32')
+        trans = cv2.perspectiveTransform(src, self.unwarp_M)
+        return trans[0][0]
+    
+    def camera2Geocoordinates(self, x, y):
+        birdEyeX, birdEyeY = self.camera2BirdEye(x, y)
+        return self.birdEye2Geocoordinates(birdEyeX, birdEyeY)
+    

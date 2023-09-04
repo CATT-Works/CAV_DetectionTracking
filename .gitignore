@@ -133,4 +133,5 @@ logs/
 tmp/
 empty_frames/
 deep_sort_network/
+models/
 

@@ -37,8 +37,17 @@ class BoundingBox:
                               the middle of the bottom line of bounding box
         birdEyeX, birdEyeY  - Coordinates corresponding to (x, y) on the Bird Eye View image.
         lon, lat            - spatial coordinates of bounding box (corrdinates of (x, y) point).
+        toPoint             - how the bounding boxes should be transformed to point coordinates.
+                              The first letter denotes y coordinate: (T)op, (B)ottom, (C)enter
+                              The second one denotes x coordinate (L)eft, (R)ight, (Center)
+                              The default value is BC (Bottom, Center)
+                              Finally you may set the number that corresponds to the percentage value
+                              of the distance of x coordinate from the verge. For example:
+                                  BL10 - bottom, 10% from the left edge
+                                  BL5 - bottom, 5% from the right edge
+                                  
     """
-    def __init__(self, xLeft, xRight, yTop, yBottom, timeStamp=None, params=None):
+    def __init__(self, xLeft, xRight, yTop, yBottom, timeStamp=None, params=None, toPoint = 'BC'):
         """
         Arguments:
             xLeft, xRight, yTop, yBottom - bounding box coordinates
@@ -57,8 +66,9 @@ class BoundingBox:
         self.area = (xRight - xLeft) * (yBottom - yTop)
 
         # Coordinates reduced to the point
-        self.x = round((self.xLeft + self.xRight) / 2)
-        self.y = self.yBottom
+        self.toPoint = toPoint
+        self.__calculateToPoint()
+        
         self.birdEyeX = None
         self.birdEyeY = None
 
@@ -75,6 +85,56 @@ class BoundingBox:
             self.updateParams(params)
 
 
+            
+    def __calculateToPoint(self):
+        """
+        Converts a box to a single point
+        """
+        
+        if len(self.toPoint) > 2:
+            perc = int(self.toPoint[2:])
+        else:
+            perc = 0
+        
+        xtype, ytype = self.toPoint[1], self.toPoint[0]
+        if ytype == 'T':
+            self.y = self.yTop
+        elif ytype == 'C':
+            self.y = round((self.xTop + self.yBottom) / 2)
+        else: # Default is Bottom
+            self.y = self.yBottom
+        
+        if xtype == 'L':
+            self.x = self.xLeft
+            if perc > 0:
+                self.x += round(perc / 100 * (self.xRight - self.xLeft))
+        elif xtype == 'R':
+            self.x = self.xRight
+            if perc > 0:
+                self.x -= round(perc / 100 * (self.xRight - self.xLeft))
+                
+        else: # Defult is center
+            self.x = round((self.xLeft + self.xRight) / 2)
+            
+            
+        
+    def setToPoint(self, toPoint):
+        """
+        Sets a way of converting the bounding box to a single x,y pair of coordinates:
+        Arguments:
+        toPoint             - how the bounding boxes should be transformed to point coordinates.
+                              The first letter denotes y coordinate: (T)op, (B)ottom, (C)enter
+                              The second one denotes x coordinate (L)eft, (R)ight, (Center)
+                              The default value is BC (Bottom, Center)
+                              Finally you may set the number that corresponds to the percentage value
+                              of the distance of x coordinate from the verge. For example:
+                                  BL10 - bottom, 10% from the left edge
+                                  BL5 - bottom, 5% from the right edge
+        """
+        
+        self.toPoint = toPoint
+        self.__calculateToPoint()
+            
     def updateParams(self, params, force_update = False):
         """
         Updates birdEye pixel coordinates and corresponding latitude and longitude.
@@ -144,8 +204,8 @@ class Object():
         self.tracker = None
         self.color = None # Color user for objects
         self.notDetectedCounter = 0 # Counter used for object destruction
-        self.id = id(self)
-
+        #self.id = id(self)
+        self.id = '{}_{}'.format(id(self), time())
         self.heading = None # Heading of the object in degrees
 
     def createTracker(self, img, bbox, add_box = True):
@@ -283,19 +343,23 @@ class Object():
 
         return ret
 
-    def getSpeed(self):
+    def getSpeed(self, lookback = 1):
         """
+        Arguments:
+            lookback: how many frames back (bounding boxes) should be considered
         Returns:
             - speed ob the objects [m/s]. Speed is computed based on the last two bounding boxes
             - distance that has been driven (in meters)
             - time (in seconds)
         """
 
-        if len (self.bboxes) < 2:
+        first_box_pos = int(lookback + 1)
+
+        if len (self.bboxes) < first_box_pos:
             return None, None, None
 
-        dist = self.__computeDistance(self.bboxes[-2], self.bboxes[-1])
-        ttime = self.bboxes[-1].timeStamp - self.bboxes[-2].timeStamp
+        dist = self.__computeDistance(self.bboxes[-first_box_pos], self.bboxes[-1])
+        ttime = self.bboxes[-1].timeStamp - self.bboxes[-first_box_pos].timeStamp
 
         if ttime == 0:
             return 0.0, 0.0, 0.0
@@ -316,7 +380,7 @@ class Object():
         Returns: elevation of an object (elevation of the last bounding box)
         """
         if len(self.bboxes) > 0:
-            return self.bboxes[0].elevation
+            return self.bboxes[-1].elevation
         else:
             return None
 
@@ -385,7 +449,7 @@ class Object():
         msg = json.dumps(m)
         return msg
 
-    def getParams(self, asCsv=False):
+    def getParams(self, asCsv=False, speedLookback = 1):
         """
         Returns the parameters, for the logging purposes.
         Arguments:
@@ -396,20 +460,17 @@ class Object():
         m = {}
         m['id'] = self.id
         m['objectType'] = int(self.type)
-        m['secMark'] = time()
         
         if len(self.bboxes) == 0:
+            m['secMark'] = None
             m['xLeft'] = None
             m['xRight'] = None
             m['yTop'] = None 
             m['yBottom'] = None 
             m['lat'] = None
             m['lon'] = None            
-        else:
-            self.bboxes[-1].updateParams(params)  
-            if len(self.bboxes) > 1:
-                self.bboxes[-2].updateParams(params)            
-            
+        else:            
+            m['secMark'] = self.bboxes[-1].timeStamp
             m['xLeft'] = self.bboxes[-1].xLeft
             m['xRight'] = self.bboxes[-1].xRight
             m['yTop'] = self.bboxes[-1].yTop 
@@ -417,12 +478,12 @@ class Object():
             m['lat'] = self.bboxes[-1].lat
             m['lon'] = self.bboxes[-1].lon
             
-        m['speed'], _, _ = self.getSpeed()
+        m['speed'], _, _ = self.getSpeed(speedLookback)
         m['heading'] = self.getHeading()
         m['elevation'] = self.getElevation()
 
         if asCsv:
-            ret = ','.join(['{}']*len(dic))
+            ret = ','.join(['{}']*len(m))
             ret = ret.format(
                 m['id'], 
                 m['objectType'],
