@@ -129,9 +129,12 @@ dmypy.json
 .pyre/
 
 #Added by Przemek
+deep_sort_network/
+models/
 logs/
 tmp/
 empty_frames/
-deep_sort_network/
-models/
-
+frames/
+MoveOver/
+MoveOver/frames/
+MoveOver/videos/
