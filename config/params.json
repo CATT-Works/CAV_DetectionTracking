@@ -1,11 +1,11 @@
 {
   "videoShape" : [640, 480],
-  "birdEyeViewShape" : [665, 379],
+  "birdEyeViewShape" : [1338, 845],
 
-  "cameraPoints" : [[533, 327], [543, 189], [178, 178], [1, 304]],
-  "birdEyePoints" : [[387, 346], [522, 149], [248, 58], [172, 278]],
+  "cameraPoints" : [[333, 371], [437, 255], [184, 271], [10, 319]],
+  "birdEyePoints" : [[592, 430], [896, 369], [727, 232], [577, 238]],
 
-  "birdEyeCoordinates" : [[8, 367], [645, 81]],
-  "latLonCoordinates" : [[-76.925484, 38.979819], [-76.925143, 38.979938]],
+  "birdEyeCoordinates" : [[15, 97], [1327, 655]],
+  "latLonCoordinates" : [[-76.656819, 38.961082], [-76.654449, 38.960298]],
   "elevation" : 40
 }
