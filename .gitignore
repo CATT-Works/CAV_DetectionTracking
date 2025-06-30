@@ -138,3 +138,5 @@ frames/
 MoveOver/
 MoveOver/frames/
 MoveOver/videos/
+
+yolo*.pt

@@ -28,4 +28,13 @@ This is Alpha version of the code. It works but it was designed as a Proof Of Co
 - demo.ipynb - Demo that shows how to use this code. 
 - demo_noDeepSort.ipynb - an old version of demo that used various cv2 trackets instead of Deep Sort.
 
+# Alternative Implementation
+There is also a **`YOLO`** branch available that uses modern YOLO models (YOLOv8/YOLOv10) for both detection and tracking instead of FRCNN + DeepSort. The YOLO implementation offers improved performance and simplified architecture. To use the YOLO version, switch to the YOLO branch:
+
+```bash
+git checkout YOLO
+```
+
+The YOLO branch includes updated dependencies, simplified detection/tracking pipeline, and enhanced performance while maintaining compatibility with existing BSM generation and visualization components.
+
 
