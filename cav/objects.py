@@ -8,6 +8,23 @@ from enum import Enum
 
 from .functions import geo2Angle
 
+def convert_numpy_to_native(obj):
+    """
+    Recursively convert numpy types to Python native types for JSON serialization
+    """
+    if isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, dict):
+        return {key: convert_numpy_to_native(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_to_native(item) for item in obj]
+    else:
+        return obj
+
 class ObjectType(Enum):
     Unknown = 0
     Person = 1
@@ -443,6 +460,10 @@ class Object():
             m = {i: m[i] for i in m if m[i] is not None}
 
         self.msgCnt += 1
+        
+        # Convert any numpy values to Python native types for JSON serialization
+        m = convert_numpy_to_native(m)
+        
         if retDic:
             return m
 
@@ -483,6 +504,8 @@ class Object():
         m['elevation'] = self.getElevation()
 
         if asCsv:
+            # Convert any numpy values to Python native types
+            m = convert_numpy_to_native(m)
             ret = ','.join(['{}']*len(m))
             ret = ret.format(
                 m['id'], 
@@ -500,6 +523,8 @@ class Object():
             )
             return ret
         else:
+            # Convert any numpy values to Python native types
+            m = convert_numpy_to_native(m)
             return m
 
 

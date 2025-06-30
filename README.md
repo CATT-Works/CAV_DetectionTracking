@@ -14,18 +14,104 @@ The entire system is build of three components:
 
 This repository contains Detection and Tracking component.
 
+# Branch Information
+This repository has two main branches:
+- **`master`**: Contains the original implementation using FRCNN (TensorFlow) for detection and DeepSort for tracking
+- **`YOLO`**: Contains the modernized implementation using YOLOv8/YOLOv11 for both detection and tracking
+
+**Current branch**: `YOLO` - This is the active development branch with the latest improvements.
+
 # Credits
-- For object detection [Google TensorFlow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) is used.
-- For Tracking (deep sort) I am using [Nicolai Wojke Deep Sort Repository](https://github.com/nwojke/deep_sort).
+## Current Implementation (YOLO branch)
+- For object detection and tracking: [Ultralytics YOLO](https://github.com/ultralytics/ultralytics) - Modern, fast, and accurate object detection and tracking
+- For computer vision operations: [OpenCV](https://opencv.org/)
+- For deep learning: [PyTorch](https://pytorch.org/)
+
+## Original Implementation (master branch)
+- For object detection: [Google TensorFlow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) (FRCNN)
+- For tracking: [Nicolai Wojke Deep Sort Repository](https://github.com/nwojke/deep_sort)
 
 # About the code
 This is Alpha version of the code. It works but it was designed as a Proof Of Concept. The code is organized as follows:
-- ./cav: main folder with the core code
-- ./deep_sort: [Nicolai Wojke](https://github.com/nwojke/deep_sort) code (slightly changed) that is responsible for deep sort based tracking.
-- ./config: Folder with configuration files. 
-- ./doc: Detailed documentation (in plans, currently empty :<)
-- ./images: Images for visualization purposes
-- demo.ipynb - Demo that shows how to use this code. 
-- demo_noDeepSort.ipynb - an old version of demo that used various cv2 trackets instead of Deep Sort.
+
+## Core Components
+- **`./cav/`**: Main folder with the core code
+  - `detection.py`: YOLO-based object detection and tracking interface
+  - `objects.py`: Object representation and BSM message generation
+  - `parameters.py`: Camera calibration and coordinate transformation
+  - `visualization.py`: Map visualization and bounding box plotting
+  - `lanes.py`: Lane detection and analysis
+  - `functions.py`: Utility functions for geometric calculations
+
+## Configuration and Assets
+- **`./config/`**: Configuration files for different intersections
+- **`./images/`**: Images for visualization purposes (satellite views, icons, lane masks)
+- **`./doc/`**: Documentation (currently minimal)
+
+## Demo and Tools
+- **`demo.py`**: Command-line interface for running detection and tracking
+- **`demo.ipynb`**: Jupyter notebook demonstrating the complete pipeline
+- **`./tools/`**: Utility scripts for configuration and analysis
+
+## Dependencies
+- **`requirements.txt`**: Python dependencies for the YOLO implementation
+- **`./deep_sort/`**: (Legacy) DeepSort implementation (not used in YOLO branch)
+
+# Key Improvements in YOLO Branch
+
+## Performance Enhancements
+- **Faster Processing**: YOLO is significantly faster than FRCNN + DeepSort
+- **Unified Model**: Single YOLO model handles both detection and tracking
+- **Better Accuracy**: Improved detection and tracking performance
+- **Reduced Complexity**: Eliminated separate feature extraction pipeline
+
+## Technical Improvements
+- **Modern Architecture**: PyTorch-based instead of TensorFlow
+- **Built-in Tracking**: YOLO's integrated tracking eliminates need for DeepSort
+- **Better Memory Efficiency**: Single model reduces memory footprint
+- **Real-time Performance**: Optimized for live video streams
+
+## Usage Examples
+
+### Basic Usage
+```bash
+# Use default YOLOv8 nano model
+python demo.py
+
+# Use YOLOv8 small model
+python demo.py --yolo_model yolov8s.pt
+
+# Use YOLOv11 nano model
+python demo.py --yolo_model yolov11n.pt
+```
+
+### Advanced Usage
+```bash
+# Custom video stream with YOLOv8 medium model
+python demo.py --yolo_model yolov8m.pt --video_stream rtsp://camera.ip/stream
+
+# Enable BSM pushing to server
+python demo.py --yolo_model yolov8l.pt --push_bsm
+
+# Save frames and logs
+python demo.py --yolo_model yolov8x.pt --frame_folder ./output --logfile tracking.log
+```
+
+## Model Options
+- **YOLOv8**: `yolov8n.pt`, `yolov8s.pt`, `yolov8m.pt`, `yolov8l.pt`, `yolov8x.pt`
+- **YOLOv11**: `yolov11n.pt`, `yolov11s.pt`, `yolov11m.pt`, `yolov11l.pt`, `yolov11x.pt`
+
+# Migration Notes
+If you're migrating from the master branch (FRCNN + DeepSort):
+1. Install new dependencies: `pip install -r requirements.txt`
+2. Update model paths: Use `--yolo_model` instead of `--model`
+3. The detection and tracking pipeline is now unified in a single call
+4. BSM generation and visualization remain compatible
+
+# Future Development
+- Support for newer YOLO versions as they become available
+- Enhanced tracking algorithms and performance optimizations
+- Integration with additional sensor types
+- Improved BSM message formats and standards compliance
 
 

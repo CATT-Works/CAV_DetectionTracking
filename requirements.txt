@@ -1,0 +1,29 @@
+# CAV Detection Tracking - Requirements
+# Updated for YOLOv11 migration (removed TensorFlow, added PyTorch/Ultralytics)
+
+# Core computer vision and ML packages
+ultralytics>=8.0.0
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Computer vision
+opencv-python>=4.5.0
+numpy>=1.21.0
+
+# Scientific computing
+scipy>=1.7.0
+
+# Data manipulation and visualization
+matplotlib>=3.5.0
+pandas>=1.3.0
+
+# Network communication
+# (socket and json are built-in Python modules)
+
+# Jupyter support (for notebooks)
+jupyter>=1.0.0
+ipykernel>=6.0.0
+
+# Optional: GPU support (uncomment if using CUDA)
+# torch>=2.0.0+cu118 -f https://download.pytorch.org/whl/torch_stable.html
+# torchvision>=0.15.0+cu118 -f https://download.pytorch.org/whl/torch_stable.html 
